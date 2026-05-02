@@ -12,3 +12,38 @@ on:
     paths:
       - 'src/**'
       - '!src/docs/**'
+
+jobs:
+  gerador:
+    name: Produzir Relatórios
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Criar pasta e relatórios
+        run: |
+          mkdir saida_build
+          echo "Relatório 1 gerado em $(date)" > saida_build/relatorio1.txt
+          echo "Relatório 2 gerado em $(date)" > saida_build/relatorio2.txt
+
+      - name: Salvar Artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: meus-relatorios-oficiais
+          path: saida_build/
+
+  consumidor:
+    name: Auditar Relatórios
+    runs-on: ubuntu-latest
+    needs: [gerador]
+
+    steps:
+      - name: Recuperar Artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: meus-relatorios-oficiais
+
+      - name: Listar arquivos
+        run: ls -R
+
+      - name: Exibir conteúdo
+        run: cat relatorio1.txt
